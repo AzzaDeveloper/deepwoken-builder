@@ -1,5 +1,5 @@
 <script>
-	import {auth} from "../auth.js"
+	import { env } from '$env/dynamic/public';
 
 	let points = 327;
 	let stats = {
@@ -158,7 +158,7 @@
 			});
 	}
 	// Fetching talents
-	// const auth = {key: env.TRELLO_API_KEY, token: env.TRELLO_USER_TOKEN};
+	const auth = {key: env.PUBLIC_TRELLO_API_KEY, token: env.PUBLIC_TRELLO_USER_TOKEN};
 	var categoryList = "62ae4f02bb2dc1611fec1d25";
 	var lists = {
 		"Legendary Talents": "62ad54ebea48c31bee197013",
