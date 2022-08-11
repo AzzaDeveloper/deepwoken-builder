@@ -53,8 +53,10 @@
 			ev.target.value = 0;
 		}
 		// Failsafe
-		if (points - ev.target.value < 0) {
-			ev.target.value = points;
+		var change = parseInt(ev.target.value) - stats[statType][statName];
+		if (points - change < 0) {
+			console.log("this is getting triggered")
+			ev.target.value = ev.target.value - change;
 		}
 		stats[statType][statName] = parseInt(ev.target.value);
 		// Calculate points to deduct
@@ -66,7 +68,7 @@
 			}
 		}
 		// Adding a point to investment points if player unlocked more elements
-		let unlocked = false;;
+		let unlocked = false;
 		for (let stat in stats.elem) {
 			if (unlocked && stats.elem[stat] > 0) {investmentPoints++};
 			if (stats.elem[stat] >= 1) {unlocked = true};
