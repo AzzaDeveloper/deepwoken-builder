@@ -1,7 +1,7 @@
 <script>
 	import { env } from '$env/dynamic/public';
-	import dotenv from 'dotenv';
-	dotenv.config();
+	//import dotenv from 'dotenv';
+	//dotenv.config();
 
 	let points = 327;
 	let stats = {
