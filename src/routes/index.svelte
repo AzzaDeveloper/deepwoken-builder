@@ -1,5 +1,6 @@
 <script>
-	//import auth from "../auth.json"
+	import {auth} from "../auth.js"
+
 	let points = 327;
 	let stats = {
 		basic: {
@@ -157,7 +158,7 @@
 			});
 	}
 	// Fetching talents
-	const auth = {key: process.env.TRELLO_API_KEY, token: process.env.TRELLO_USER_TOKEN};
+	// const auth = {key: env.TRELLO_API_KEY, token: env.TRELLO_USER_TOKEN};
 	var categoryList = "62ae4f02bb2dc1611fec1d25";
 	var lists = {
 		"Legendary Talents": "62ad54ebea48c31bee197013",
@@ -193,12 +194,12 @@
 <style>
 	body {
 		padding: 10px;
-		background: url(./background.png) repeat;
+		background: url(/background.png) repeat;
 		overflow: hidden;
 	}
 	.wrapper {
 		border: 15px solid black;
-		border-image: url(./border.png) 45%;
+		border-image: url(/border.png) 45%;
 		background-color: #E5E0CA;
 		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 		font-size: 15px;
