@@ -60,21 +60,36 @@
 			//console.log(`Checking ${talent.name}`)
 			if (talent.reqs != "None") {
 				//console.log("Not none. Continuing...")
-				for (let req in talent.reqs) {
-					//console.log(talent)
-					//console.log(`Checking ${req}`)
-					for (let statType in stats) {
-						if (stats[statType][req] == undefined) {
-							//console.log(`${req} not found in ${statType}, continuing.`)
-							continue;
-						} else if (Number(stats[statType][req]) < talent.reqs[req]) {
-							//console.log(`Checking req ${talent.reqs[req]} against stat ${stats[statType][req]}`)
-							//console.log(`Not enough of ${talent.reqs[req]}. Skipping this talent.`)
-							return;
-						} else {
+				if (!talent.multipleReqs) {
+					for (let req in talent.reqs) {
+						//console.log(talent)
+						//console.log(`Checking ${req}`)
+						for (let statType in stats) {
+							if (stats[statType][req] == undefined) {
+								//console.log(`${req} not found in ${statType}, continuing.`)
+								continue;
+							} else if (Number(stats[statType][req]) < talent.reqs[req]) {
+								//console.log(`Checking req ${talent.reqs[req]} against stat ${stats[statType][req]}`)
+								//console.log(`Not enough of ${talent.reqs[req]}. Skipping this talent.`)
+								return;
+							} else {
+							}
 						}
 					}
+				} else {
+					let pass = false;
+					for (let req in talent.reqs) {
+						for (let statType in stats) {
+							if (stats[statType][req] == undefined) {
+								continue;
+							} else if (Number(stats[statType][req]) >= talent.reqs[req]) {
+								pass = true
+							}
+						}
+					}
+					if (!pass) return;
 				}
+				
 			} else {
 				//console.log(`Req is none! Adding...`)
 			}
@@ -125,14 +140,21 @@
 		updateTalents();	
 	}
 	function generate(text, avoid) {
-		var parsedText = JSON.parse(text);		parsedText.forEach((card) => {
+		var parsedText = JSON.parse(text);		
+		parsedText.forEach((card) => {
 			let [name, category] = card.name.split(" | ");
 			// Remove blacklisted talents
 			if (!categoryBlacklist.includes(category) && !name.includes("Unbounded") && !talentBlacklist.includes(name) && !(name == avoid)) {
 				// Getting reqs
 				let reqIndex = card.desc.indexOf("Requirements (if known):\n---\n");
 				let [statReqs, addReq1, addReq2] = card.desc.slice(reqIndex + 29, card.desc.indexOf("Talent Stats")).split("\n")
-				statReqs = statReqs.split(", ");
+				let multipleReqs = false;
+				if (statReqs.includes("or")) {
+					multipleReqs = true;
+					statReqs = statReqs.split(" or ");
+				} else {
+					statReqs = statReqs.split(", ");
+				}
 				let reqs = {};
 				// Getting descs
 				let desc = card.desc.slice(card.desc.indexOf("Talent Description:\n---\n") + 23, card.desc.indexOf("What It Does In-Game:"));
@@ -171,6 +193,7 @@
 					desc: desc,
 					rarity: avoid.split(" ")[0],
 					reqs: reqs,
+					multipleReqs: multipleReqs,
 					power: power,
 					note: note
 				})
