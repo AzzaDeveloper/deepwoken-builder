@@ -1,5 +1,5 @@
 <script>
-	import auth from "../auth.json"
+	//import auth from "../auth.json"
 	let points = 327;
 	let stats = {
 		basic: {
@@ -157,7 +157,7 @@
 			});
 	}
 	// Fetching talents
-	//const auth = {key: process.env.TRELLO_API_KEY, token: process.env.TRELLO_USER_TOKEN};
+	const auth = {key: process.env.TRELLO_API_KEY, token: process.env.TRELLO_USER_TOKEN};
 	var categoryList = "62ae4f02bb2dc1611fec1d25";
 	var lists = {
 		"Legendary Talents": "62ad54ebea48c31bee197013",
