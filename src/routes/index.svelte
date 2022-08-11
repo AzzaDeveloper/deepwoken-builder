@@ -176,9 +176,9 @@
 		.then(text => {JSON.parse(text).forEach((card) => {if (card.name != "Index") talents[card.name] = []})})
 		.then(() => {*/
 			// Loop through all the lists to generate 
-			let fetches = [`https://api.trello.com/1/lists/${lists[listsName]}/cards?key=${auth.key}&token=${auth.token}`];
-			console.log()
+			let fetches = []
 			for (let listsName in lists) {
+				console.log(`https://api.trello.com/1/lists/${lists[listsName]}/cards?key=${auth.key}&token=${auth.token}`)
 				fetches.push(
 				fetch(`https://api.trello.com/1/lists/${lists[listsName]}/cards?key=${auth.key}&token=${auth.token}`, {method: "GET"})
 					.then(res => {return res.text()})
