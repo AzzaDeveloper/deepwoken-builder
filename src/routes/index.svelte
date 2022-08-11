@@ -183,11 +183,9 @@
 					.then(res => {return res.text()})
 					.then(text => {generate(text, listsName)})
 					//.then(console.log(talents))
+					.catch(err => console.error(err))
 				)
 			}
-			Promise.all(fetches).then(function() {
-				console.log(talents);
-  			});
 		/*})*/
 </script>
 
