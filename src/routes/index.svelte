@@ -158,7 +158,12 @@
 			});
 	}
 	// Fetching talents
-	const auth = {key: env.PUBLIC_TRELLO_API_KEY, token: env.PUBLIC_TRELLO_USER_TOKEN};
+	var auth = {};
+	if (import.meta.env.DEV) {
+		auth = {key: env.PUBLIC_TRELLO_API_KEY, token: env.PUBLIC_TRELLO_USER_TOKEN};
+	} else {
+		auth = {Key: process.env.PUBLIC_TRELLO_API_KEY, token: process.env.PUBLIC_TRELLO_USER_TOKEN};
+	}
 	var categoryList = "62ae4f02bb2dc1611fec1d25";
 	var lists = {
 		"Legendary Talents": "62ad54ebea48c31bee197013",
@@ -178,7 +183,6 @@
 			// Loop through all the lists to generate 
 			let fetches = []
 			for (let listsName in lists) {
-				console.log(`https://api.trello.com/1/lists/${lists[listsName]}/cards?key=${auth.key}&token=${auth.token}`)
 				fetches.push(
 				fetch(`https://api.trello.com/1/lists/${lists[listsName]}/cards?key=${auth.key}&token=${auth.token}`, {method: "GET"})
 					.then(res => {return res.text()})
