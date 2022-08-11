@@ -161,11 +161,12 @@
 	}
 	// Fetching talents
 	var auth = {};
-	if (import.meta.env.DEV) {
+	/*if (import.meta.env.DEV) {
 		auth = {key: env.PUBLIC_TRELLO_API_KEY, token: env.PUBLIC_TRELLO_USER_TOKEN};
 	} else {
 		auth = {Key: process.env.PUBLIC_TRELLO_API_KEY, token: process.env.PUBLIC_TRELLO_USER_TOKEN};
-	}
+	}*/
+	auth = {key: env.PUBLIC_TRELLO_API_KEY, token: env.PUBLIC_TRELLO_USER_TOKEN};
 	var categoryList = "62ae4f02bb2dc1611fec1d25";
 	var lists = {
 		"Legendary Talents": "62ad54ebea48c31bee197013",
