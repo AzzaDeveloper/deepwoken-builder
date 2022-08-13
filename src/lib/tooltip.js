@@ -1,4 +1,3 @@
-import { element_is } from "svelte/internal";
 import Tooltip from "../tooltip.svelte"
 
 let tooltips = [];
@@ -19,11 +18,11 @@ export function tooltip(element, params) {
 	function mouseMove(event) {
 		tooltipComponent.$set({
 			x: event.pageX,
-			y: event.pageY,
+			y: event.pageY// - tooltipComponent.clientHeight,
 		})
 	}
 	function mouseLeave() {
-		tooltipComponent.$destroy();
+		if (tooltipComponent) tooltipComponent.$destroy();
 	}
 	
 	element.addEventListener('mouseover', mouseOver);
