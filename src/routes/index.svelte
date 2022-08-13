@@ -149,8 +149,10 @@
 		if (takenTalents[category] == undefined) takenTalents[category] = [];
 		let talentIndex = takenTalents[category].indexOf(talent)
 		if (taking) {
-			if (talentIndex == -1) takenTalents[category].push(talent);
-			takenTalentsCount++;
+			if (talentIndex == -1) {
+				takenTalents[category].push(talent);
+				takenTalentsCount++;
+			}
 		} else {
 			takenTalents[category].splice(talentIndex, 1)
 			if (takenTalents[category].length == 0) {
@@ -729,5 +731,5 @@
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: 0px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.0.0 - {env.VERCEL_GIT_COMMIT_MESSAGE}</p>
+	<p class="footer" style="position: fixed; bottom: 0px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.0.1 - Fixed export button not centering. Fixed where pressing on a talent multiple times would increase the talent count.</p>
 </body>
