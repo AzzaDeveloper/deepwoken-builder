@@ -41,13 +41,13 @@
 		mantras: {}
 	}
 	let takenTalents = {};
-	let takenMantras = {};
 	let buildInfo = {
 		name: "",
 		desc: "",
 		oath: "",
 		murmur: ""
 	}
+	let mantras = {Combat: [], Mobility: [], Support: []};
 	//
 	let oaths = ["Oathless", "Blindseer", "Visionshaper"];
 	let murmurs = ["Ardour", "Tacet"];
@@ -71,7 +71,6 @@
 			if (docSnap.exists()) {
 				let data = docSnap.data();
 				buildInfo = data.buildInfo;
-				obtainables.mantras = data.obtainableMantras;
 				takenTalents = data.takenTalents;
 				//
 				for (let statType in stats) {
@@ -80,9 +79,10 @@
 					}
 				}
 				//
-				updateActualStats();
+				updateMantras(data.obtainableMantras);
+				updateActualStats(true);
 				updateTalents();
-				updateMantras();
+				//
 			} else {
 				alert("No build found with requested ID!")
 			}
@@ -161,7 +161,7 @@
 		takenTalents = takenTalents;
 		removeTooltips();
 	}
-	function updateActualStats() {
+	function updateActualStats(noUpdateMantra) {
 		// Calculate points to deduct
 		let investmentPoints = 327;
 		let totalPoints = 0;
@@ -179,7 +179,7 @@
 		// Apply deduction from investment points
 		points = investmentPoints - totalPoints;
 		updateTalents();
-		updateMantras();
+		if (!noUpdateMantra) updateMantras();
 	}
 	//
 	function updateStats(ev) {
@@ -285,7 +285,6 @@
 		});
 	}
 	// Getting rollable mantras
-	let mantras = {Combat: [], Mobility: [], Support: []};
 	function generateMantras(text) {
 		JSON.parse(text).forEach(card => {
 			let [mantraName, mantraDetails] = card.name.split(" | ");
@@ -299,28 +298,39 @@
 			})
 		})
 	}
-	function updateMantras() {
+	function updateMantras(data) {
 		obtainables.mantras = {Combat: [], Mobility: [], Support: []}
-		// Loop through elements to see which mantra is obtainable
-		for (let mantraType in mantras) {
-			mantras[mantraType].map(mantra => {
-				if (stats.elem[mantra.type] >= 1) {
-					if (mantra.stars.length == 0) obtainables.mantras[mantraType].push(mantra)
-				}
-				if (stats.elem[mantra.type] >= 20) {
-					if (mantra.stars.length == 1) obtainables.mantras[mantraType].push(mantra)
-				}
-				if (stats.elem[mantra.type] >= 30) {
-					if (mantra.stars.length == 2) obtainables.mantras[mantraType].push(mantra)
-				}
-				if (stats.elem[mantra.type] >= 50) {
-					if (mantra.stars.length == 3) obtainables.mantras[mantraType].push(mantra)
-				}
-			})
+		if (data == undefined) {
+			// Loop through elements to see which mantra is obtainable
+			for (let mantraType in mantras) {
+				mantras[mantraType].map(mantra => {
+					if (stats.elem[mantra.type] >= 1) {
+						if (mantra.stars.length == 0) obtainables.mantras[mantraType].push(mantra)
+					}
+					if (stats.elem[mantra.type] >= 20) {
+						if (mantra.stars.length == 1) obtainables.mantras[mantraType].push(mantra)
+					}
+					if (stats.elem[mantra.type] >= 30) {
+						if (mantra.stars.length == 2) obtainables.mantras[mantraType].push(mantra)
+					}
+					if (stats.elem[mantra.type] >= 50) {
+						if (mantra.stars.length == 3) obtainables.mantras[mantraType].push(mantra)
+					}
+				})
+			}
+		} else {
+			console.log("DATA FOUND")
+			for (let mantraType in obtainables.mantras) {
+				obtainables.mantras[mantraType] = data[mantraType];
+			}
 		}
 	}
-	function getMantra(elem, mantra, mantraType) {
-		if (!mantra.taken) {
+	function getMantra(elem, mantra, mantraType, intialTakenCheck) {
+		if (intialTakenCheck) {
+			if (mantra.taken) {
+				return "color: black; font-weight: 700";
+			}
+		} else if (!mantra.taken) {
 			elem.style.color = "black";
 			elem.style.fontWeight = "700";
 			mantra.taken = true;
@@ -682,7 +692,11 @@
 			<div style="text-align: center" class="mantras-category" id={type.toLowerCase()}>{type}
 				<div class="talents">
 					{#each mantras as mantra}
-						<div class="talent mantra" on:mousedown={getMantra(this, mantra, type)}>{mantra.name} {mantra.stars}</div>
+						{#if mantra.taken} 
+							<div class="talent mantra" on:mousedown={getMantra(this, mantra, type)} style="font-weight: 700; color:black">{mantra.name} {mantra.stars}</div>
+						{:else}
+							<div class="talent mantra" on:mousedown={getMantra(this, mantra, type, false)}>{mantra.name} {mantra.stars}</div>
+						{/if}
 					{/each}
 				</div>
 			</div>
