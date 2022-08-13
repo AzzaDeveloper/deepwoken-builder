@@ -599,15 +599,29 @@
 		position: fixed;
 		top: 88vh;
 		left: 68.9vw;
+		width: 11.25%;
 		font-family: "Lora", "sans-serif";
 		border: 15px solid;
 		border-image: url(/border.png) 45%;
 		background-color: rgb(0, 32, 10);
-		padding: 0px;
 		color: white;
 	}
 	#export:hover {
 		box-shadow: 0px 0px 10px black;
+	}
+	/* Credits */
+	.credits {
+		position: fixed;
+		left: 84vw;
+		top: 74vh;
+		width: 13vw;
+		height: 18.5vh;
+	}
+	a {
+		display: block;
+	}
+	p {
+		margin-top: 4vh;
 	}
 </style>
 
@@ -705,9 +719,15 @@
 	<!-- Overview -->
 	<div class="wrapper overview">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 71.75vw;"> Overview </h3>
-		<button id="export" on:mousedown={exportBuild}>Export link to clipboard</button>
+		<button id="export" on:mousedown={exportBuild}>Export</button>
 	</div>
 	<!-- Credits -->
+	<div class="wrapper credits">
+		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.75vw;"> Credits </h3>
+		<p>Made by Cyfer#2358. Please send feedback!</p>
+		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a><br>
+		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
+	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: 0px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.0.0 - {env.VITE_VERCEL_GIT_COMMIT_MESSAGE}</p>
+	<p class="footer" style="position: fixed; bottom: 0px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.0.0 - {env.VERCEL_GIT_COMMIT_MESSAGE}</p>
 </body>
