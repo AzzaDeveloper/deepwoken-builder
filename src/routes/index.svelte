@@ -41,6 +41,7 @@
 		mantras: {}
 	}
 	let takenTalents = {};
+	let takenTalentsCount = 0;
 	let buildInfo = {
 		name: "",
 		desc: "",
@@ -77,6 +78,10 @@
 					for (let stat in stats[statType]) {
 						stats[statType][stat] = data.stats[statType][stat];
 					}
+				}
+				//
+				for (let category in takenTalents) {
+					takenTalentsCount += takenTalents[category].length;
 				}
 				//
 				updateMantras(data.obtainableMantras);
@@ -144,7 +149,6 @@
 		})
 	}
 	//
-	let takenTalentsCount = 0;
 	function getTalent(category, talent, taking) {
 		if (takenTalents[category] == undefined) takenTalents[category] = [];
 		let talentIndex = takenTalents[category].indexOf(talent)
@@ -731,5 +735,5 @@
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: 0px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.0.1 - Fixed export button not centering. Fixed where pressing on a talent multiple times would increase the talent count.</p>
+	<p class="footer" style="position: fixed; bottom: 0px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.0.2 - Fixed talent count staying at 0 when loading a build.</p>
 </body>
