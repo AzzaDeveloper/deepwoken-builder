@@ -530,11 +530,12 @@
 	}
 	.stat-item {
 		position: relative;
-		margin: 5px 3px;
+		margin: 6px 3px;
 	}
 	.stat-input {
 		float: right;
 		width: 25%;
+		height: 10%;
 		right: 0;
 		font-family: "Lora", "sans-serif";
 		font-size: 14px;
@@ -822,5 +823,5 @@
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.0 - Fixed multiple bugs, reworked data and added attunementless mantras.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.0 - Fixed multiple bugs, reworked data, added overview stats and added attunementless mantras.</p>
 </body>
