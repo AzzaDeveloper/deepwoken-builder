@@ -10,10 +10,11 @@
 // Your web app's Firebase configuration
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import { env } from '$env/dynamic/public';
 
 export let firebaseConfig = {
 
-  apiKey: "AIzaSyCJaG2IoVxK-M0aX9CpVnhn6qpLNUCgQzc",
+  apiKey: env.PUBLIC_FIREBASE_API_KEY,
 
   authDomain: "deepwoken-builder.firebaseapp.com",
 

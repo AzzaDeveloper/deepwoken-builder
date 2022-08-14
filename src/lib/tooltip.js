@@ -13,7 +13,6 @@ export function tooltip(element, params) {
 			},
 			target: document.body,
 		});
-		console.log(params)
 	}
 	function mouseMove(event) {
 		tooltipComponent.$set({

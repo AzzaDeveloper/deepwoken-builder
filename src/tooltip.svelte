@@ -9,7 +9,7 @@
 		position: absolute;
 		border: 15px solid;
 		border-image: url(/border.png) 45%;
-		background-color: white;
+		background-color: #e5e0ca;
 		width: 20vw;
 		font-family: "Lora", serif;
 		font-size: 15px;

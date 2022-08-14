@@ -4,14 +4,13 @@
 	import { tooltip } from "../lib/tooltip";
 	//
 	import { initializeApp, getApps, getApp} from "firebase/app"
-	import { getFirestore, collection, doc, setDoc, getDoc} from "firebase/firestore"
+	import { getFirestore, collection, doc, setDoc, getDoc, getDocs} from "firebase/firestore"
 	import { firebaseConfig } from "../lib/firebaseConfig"
 	import { browser } from "$app/env";
 	//
 	const firebaseApp = initializeApp(firebaseConfig);
  	const db = getFirestore(firebaseApp);
-
-
+	//
 	let points = 327;
 	let stats = {
 			basic: {
@@ -42,6 +41,7 @@
 	}
 	let takenTalents = {};
 	let takenTalentsCount = 0;
+	//
 	let buildInfo = {
 		name: "",
 		desc: "",
@@ -64,43 +64,12 @@
 	let talentBlacklist = [
 		"Termite", "Blinded", "Mark of the Lone Warrior"
 	]
-	// Load existing data if url has id
-	if ($page.url.searchParams.has("id")) {
-		let id = $page.url.searchParams.get("id");
-		let docRef = doc(db, "builds", id);
-		getDoc(docRef).then(docSnap => {
-			if (docSnap.exists()) {
-				let data = docSnap.data();
-				buildInfo = data.buildInfo;
-				takenTalents = data.takenTalents;
-				//
-				for (let statType in stats) {
-					for (let stat in stats[statType]) {
-						stats[statType][stat] = data.stats[statType][stat];
-					}
-				}
-				//
-				for (let category in takenTalents) {
-					takenTalentsCount += takenTalents[category].length;
-				}
-				//
-				updateMantras(data.obtainableMantras);
-				updateActualStats(true);
-				updateTalents();
-				//
-			} else {
-				alert("No build found with requested ID!")
-			}
-		})
-	} else {
-		
-	}
 	// Function to make sure no more than 1 tooltips are seen at any point
 	function checkTooltips() {
 		let tooltips = document.querySelectorAll("[tooltip=\"true\"]");
-		if (tooltips.length > 1) tooltips[0].remove();
+		if (tooltips.length > 1) tooltips[0].remove();	
 	}
-	function removeTooltips() {
+	function removeTooltip() {
 		let tooltips = document.querySelectorAll("[tooltip=\"true\"]");
 		tooltips[0].remove();
 	}
@@ -141,19 +110,21 @@
 				}
 			}
 			//console.log(`Talent check passed. Adding to `)
-			if (obtainables.talents[talent.rarity][talent.category] == undefined) {
-				obtainables.talents[talent.rarity][talent.category] = [];
-			}
+			if (obtainables.talents[talent.rarity][talent.category] == undefined) obtainables.talents[talent.rarity][talent.category] = [];
 			obtainables.talents[talent.rarity][talent.category].push(talent);
 			talentsCount++;
+			//
+			updateTalentStats();
 		})
 	}
 	//
+	let talentStats = {};
 	function getTalent(category, talent, taking) {
 		if (takenTalents[category] == undefined) takenTalents[category] = [];
-		let talentIndex = takenTalents[category].indexOf(talent)
+		let foundTalent = false; let talentIndex = 0;
+		takenTalents[category].map((takenTalent, i) => {if (takenTalent.name == talent.name) {foundTalent = true; talentIndex = i}});
 		if (taking) {
-			if (talentIndex == -1) {
+			if (!foundTalent) {
 				takenTalents[category].push(talent);
 				takenTalentsCount++;
 			}
@@ -165,7 +136,23 @@
 			takenTalentsCount--;
 		}
 		takenTalents = takenTalents;
-		removeTooltips();
+		updateTalentStats();
+		removeTooltip();
+	}
+	function updateTalentStats() {
+		// Calculate stats
+		talentStats = {};
+		for (let category in takenTalents) {
+			takenTalents[category].map(talent => {
+				if (talent.stats != "None") {
+				// add card stats together
+					for (let stat in talent.stats) {
+						if (talentStats[stat] == undefined) talentStats[stat] = 0;
+						talentStats[stat] += talent.stats[stat];
+					}
+				}
+			})
+		}
 	}
 	function updateActualStats(noUpdateMantra) {
 		// Calculate points to deduct
@@ -232,6 +219,20 @@
 				let reqs = {};
 				// Getting descs
 				let desc = card.desc.slice(card.desc.indexOf("Talent Description:\n---\n") + 23, card.desc.indexOf("What It Does In-Game:"));
+				let statText = card.desc.slice(card.desc.indexOf("Talent Stats:\n---\n") + 18, card.desc.indexOf("Talent Image") - 1);
+				statText = statText.split(", ");
+				let tStats = {};
+				if (statText[0] == "--" || statText[0] == "") {
+					tStats = "None";
+				} else {
+					statText.map(stat => {
+						let amount = parseInt(stat.split(" ")[0].substring(1));
+						let name = stat.split(" ")
+						name.splice(0, 1);
+						name = name.join(" ");
+						tStats[name] = amount;
+					})
+				}
 				//
 				let note = "";
 				let power = 0;
@@ -278,6 +279,7 @@
 					name: name,
 					category: category,
 					desc: desc,
+					stats: tStats,
 					rarity: avoid.split(" ")[0],
 					reqs: reqs,
 					extraReqs: extraReqs,
@@ -295,40 +297,66 @@
 		JSON.parse(text).forEach(card => {
 			let [mantraName, mantraDetails] = card.name.split(" | ");
 			let [attunement, type, stars] = mantraDetails.split(" ");
-			if (stars == undefined) stars = "";
-			mantras[type].push({
-				name: mantraName,
-				type: attunement,
-				stars: stars,
-				taken: false
-			})
+			if (attunement != "Attunementless") {
+				if (stars == undefined) stars = "";
+				mantras[type].push({
+					name: mantraName,
+					attunementless: false,
+					reqs: {},
+					type: attunement,
+					stars: stars,
+					taken: false
+				})
+			} else {
+				let [__, stat, type] = mantraDetails.split(" ");
+				let stars = mantraDetails[mantraDetails.indexOf("★")]; if (stars == undefined) stars = "";
+				let reqs = mantraDetails.substring(mantraDetails.indexOf("(") + 1, mantraDetails.indexOf(")")).split(", ");
+				let actualReqs = {};
+				reqs.map(req => {actualReqs[req.split(" ")[1]] = req.split(" ")[0]});
+				mantras[type].push({
+					name: mantraName,
+					attunementless: true,
+					reqs: actualReqs,
+					type: type,
+					stars: stars,
+					taken: false
+				})
+			}
 		})
 	}
 	function updateMantras(data) {
 		obtainables.mantras = {Combat: [], Mobility: [], Support: []}
-		if (data == undefined) {
-			// Loop through elements to see which mantra is obtainable
-			for (let mantraType in mantras) {
-				mantras[mantraType].map(mantra => {
-					if (stats.elem[mantra.type] >= 1) {
-						if (mantra.stars.length == 0) obtainables.mantras[mantraType].push(mantra)
+		// Loop through elements to see which mantra is obtainable
+		for (let mantraType in mantras) {
+			mantras[mantraType].map(mantra => {
+				if (!mantra.attunementless) {
+					let stat = stats.elem[mantra.type];
+					let stars = mantra.stars.length;
+					if (stat >= 1 && stars == 0) obtainables.mantras[mantraType].push(mantra)
+					if (stat >= 20 && stars == 1) obtainables.mantras[mantraType].push(mantra)
+					if (stat >= 30 && stars == 2) obtainables.mantras[mantraType].push(mantra)
+					if (stat >= 50 && stars == 3) obtainables.mantras[mantraType].push(mantra)
+				} else {
+					// Check reqs
+					for (let req in mantra.reqs) {
+						mantra.reqs[req] = parseInt(mantra.reqs[req]);
+						let mantraReq = mantra.reqs[req];
+						if (stats.basic[req] == undefined) {
+							if (req == "Heavy") req = "Heavy Wep.";
+							if (req == "Medium") req = "Medium Wep.";
+							if (req == "Light") req = "Light Wep.";
+							if (stats.weapon[req] < mantraReq) continue;
+						} else {
+							if (stats.basic[req] < mantraReq) continue;
+						}
+						obtainables.mantras[mantraType].push(mantra)
 					}
-					if (stats.elem[mantra.type] >= 20) {
-						if (mantra.stars.length == 1) obtainables.mantras[mantraType].push(mantra)
-					}
-					if (stats.elem[mantra.type] >= 30) {
-						if (mantra.stars.length == 2) obtainables.mantras[mantraType].push(mantra)
-					}
-					if (stats.elem[mantra.type] >= 50) {
-						if (mantra.stars.length == 3) obtainables.mantras[mantraType].push(mantra)
-					}
-				})
-			}
-		} else {
-			console.log("DATA FOUND")
-			for (let mantraType in obtainables.mantras) {
-				obtainables.mantras[mantraType] = data[mantraType];
-			}
+				}
+				// Data
+				if (data != undefined) {
+					if (data.indexOf(mantra.name) != -1) mantra.taken = true;
+				}
+			})
 		}
 	}
 	function getMantra(elem, mantra, mantraType, intialTakenCheck) {
@@ -380,6 +408,41 @@
 	Promise.all(fetches).then(function() {
 		// Generate intial talents
 		updateTalents();
+		// Load existing data if url has id
+		if ($page.url.searchParams.has("id")) {
+			let id = $page.url.searchParams.get("id");
+			let docRef = doc(db, "builds", id);
+			getDoc(docRef).then(docSnap => {
+				if (docSnap.exists()) {
+					let data = docSnap.data();
+					buildInfo = data.buildInfo;
+					//
+					talents.map(talent => {
+						if (data.taken.talents.indexOf(talent.name) != -1) {
+							if (takenTalents[talent.category] == undefined) takenTalents[talent.category] = [];
+							takenTalents[talent.category].push(talent);
+						}
+					})
+					//
+					for (let statType in stats) {
+						for (let stat in stats[statType]) {
+							stats[statType][stat] = data.stats[statType][stat];
+						}
+					}
+					//
+					for (let category in takenTalents) {
+						takenTalentsCount += takenTalents[category].length;
+					}
+					//
+					updateMantras(data.taken.mantras);
+					updateActualStats(true);
+					updateTalents();
+					//
+				} else {
+					alert("No build found with requested ID!")
+				}
+			})
+		}
   	});
 	function makeId(length) {
 		var result           = '';
@@ -401,25 +464,31 @@
 		let id = makeId(8);
 		let docRef = doc(db, "builds", id);
 			getDoc(docRef).then(docSnap => {
-				console.log(docSnap)
 				if (docSnap.exists()) {
 					console.log("build with id exists, retrying");
 					exportBuild();
 				} else {
 					console.log("unique id found, running")
+					// Process data
+					let taken = {talents:[], mantras: []};
+					for (let category in takenTalents) {
+						takenTalents[category].map(talent => taken.talents.push(talent.name));
+					}
+					for (let category in obtainables.mantras) {
+						obtainables.mantras[category].map(mantra => {if (mantra.taken) taken.mantras.push(mantra.name)})
+					}
 					let data = {
-						takenTalents: takenTalents,
-						obtainableMantras: obtainables.mantras,
+						taken: taken,
 						stats: stats,
 						buildInfo: buildInfo
 					}
 					setDoc(doc(db, "builds", id), data)
 					navigator.clipboard.writeText(`https://deepwoken-builder.vercel.app/?id=${id}`).then(function() {
+						alert("Build link copied to clipboard!");
 						console.log('Async: Copying to clipboard was successful!');
 					}, function(err) {
 						console.error('Async: Could not copy text: ', err);
 					});
-					alert("Build link copied to clipboard!");
 				}
 			})
 	}
@@ -528,6 +597,12 @@
 		height: 90%;
 		padding: 5px;
 	}
+	#rare-talent {
+		color: rgb(202, 27, 79)
+	}
+	#legendary-talent {
+		color: rgb(56, 211, 115)
+	}
 	/* Build info */
 	.build-info {
 		position: fixed;
@@ -570,8 +645,8 @@
 		position: fixed;
 		top: 32.75vh;
 	}
-	#oaths {left: 70vw}
-	#murmurs {left: 85vw}
+	#oaths {left: 68vw}
+	#murmurs {left: 79vw}
 	/* Mantras */
 	.mantras {
 		position: fixed;
@@ -603,17 +678,24 @@
 	}
 	#export {
 		position: fixed;
-		top: 88vh;
-		left: 68.9vw;
-		width: 11.25%;
+		top: 32.5vh;
+		left: 90vw;
+		width: 8%;
 		font-family: "Lora", "sans-serif";
-		border: 15px solid;
+		border: 1px solid;
 		border-image: url(/border.png) 45%;
+		padding: 5px 0px;
+		border-image-width: 15px;
 		background-color: rgb(0, 32, 10);
 		color: white;
 	}
 	#export:hover {
 		box-shadow: 0px 0px 10px black;
+	}
+	.stat-overview {
+		margin-top: 3vh;
+		overflow-y: scroll;
+		height: 85%;
 	}
 	/* Credits */
 	.credits {
@@ -659,7 +741,7 @@
 							<fieldset>
 								<legend><i>{category}</i></legend>
 							</fieldset>
-							{#each talents as talent (talent.name)}
+							{#each talents as talent (talent)}
 								<div class="name" use:tooltip={talent} on:mousedown={getTalent(category, talent, true)}>
 									<span>{talent.name}<i class="note">{talent.note}</i><br></span>
 								</div>
@@ -682,7 +764,7 @@
 				</fieldset>
 				{#each talents as talent (talent.name)}
 					<div class="name" use:tooltip={talent} on:mousedown={getTalent(category, talent, false)}>
-						<span>{talent.name}<i class="note">{talent.note}</i><br></span>
+						<span id="{talent.rarity.toLowerCase()}-talent">{talent.name}<i class="note">{talent.note}</i><br></span>
 					</div>
 				{/each}
 			{:else}
@@ -704,6 +786,7 @@
 				<option>{mm}</option>
 			{/each}
 		</select></div>
+		<button id="export" on:mousedown={exportBuild}>Export</button>
 	</div>
 	<!-- Mantras -->
 	<div class="wrapper mantras">
@@ -725,7 +808,11 @@
 	<!-- Overview -->
 	<div class="wrapper overview">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 71.75vw;"> Overview </h3>
-		<button id="export" on:mousedown={exportBuild}>Export</button>
+		<div class="stat-overview">
+			{#each Object.entries(talentStats) as [statName, statAmount]}
+				<span>+<b>{statAmount}</b> {statName}</span><br>
+			{/each}
+		</div>
 	</div>
 	<!-- Credits -->
 	<div class="wrapper credits">
@@ -735,5 +822,5 @@
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: 0px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.0.2 - Fixed talent count staying at 0 when loading a build.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.0 - Fixed multiple bugs, reworked data and added attunementless mantras.</p>
 </body>
