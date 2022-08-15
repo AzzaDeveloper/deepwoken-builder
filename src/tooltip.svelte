@@ -77,4 +77,9 @@
 		{/if}
 	</div>
 	<p>{data.desc}</p>
+	{#if data.stats != "None"}
+		{#each Object.entries(data.stats) as [statName, statAmount]}
+			<span style="color: rgba(0, 0, 0, 0.5)">{statName}: {statAmount}</span><br>
+		{/each}
+	{/if}
 </div>

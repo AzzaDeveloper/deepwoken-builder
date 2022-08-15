@@ -594,7 +594,7 @@
 		width: 14vw;
 	}
 	.obtained-talents {
-		margin-top: 5vh;
+		margin-top: 7vh;
 		height: 90%;
 		padding: 5px;
 	}
@@ -660,7 +660,7 @@
 	.mantras-category {
 		width: 33%;
 		padding: 5px;
-		margin-top: 3vh;
+		margin-top: 4.5vh;
 	}
 	.mantra {
 		color:rgba(0, 0, 0, 0.75)
@@ -758,6 +758,7 @@
 	<!-- Obtained talents-->
 	<div class="wrapper obtained-wrapper">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 8vh; left: 52.5vw;"> Obtained Talents <i class="note">{takenTalentsCount}</i></h3>
+		<h3 style="text-align: center; font-size: 14px; margin: 0; position: fixed; top: 11vh; left: 52vw;"><i class="note">Click on talents to get them!</i></h3>
 		<div class="obtained-talents talents">
 			{#each Object.entries(takenTalents) as [category, talents] (talents)}
 				<fieldset>
@@ -776,7 +777,7 @@
 	<!-- Build stuff -->
 	<div class ="wrapper build-info">
 		<b><input id="build-name" placeholder="Build name..." bind:value={buildInfo.name}></b>
-		<textarea id="build-description" placeholder="Build description... Don't forget you can click on talents and mantras to take them." bind:value={buildInfo.desc}></textarea>
+		<textarea id="build-description" placeholder="Build description..." bind:value={buildInfo.desc}></textarea>
 		<div id="oaths">Oath: <select bind:value={buildInfo.oath}>Oath:
 			{#each oaths as mm}
 				<option>{mm}</option>
@@ -792,6 +793,7 @@
 	<!-- Mantras -->
 	<div class="wrapper mantras">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 44vh; left: 80.5vw;"> Mantras </h3>
+		<h3 style="text-align: center; margin: 0; position: fixed; top: 46.5vh; left: 76.75vw; font-size:14px"><i class="note">Click on mantras to get them!</i></h3>
 		{#each Object.entries(obtainables.mantras) as [type, mantras] (mantras)}
 			<div style="text-align: center" class="mantras-category" id={type.toLowerCase()}>{type}
 				<div class="talents">
@@ -823,5 +825,5 @@
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.1 - Fixed multiple bugs, reworked data, added overview stats and added attunementless mantras.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.2 - Talent stats now also display in tooltips. Added some reminders.</p>
 </body>
