@@ -10,6 +10,20 @@
 	const firebaseApp = initializeApp(firebaseConfig);
  	const db = getFirestore(firebaseApp);
 	//
+	// Load existing data if url has id
+	let data;
+	if ($page.url.searchParams.has("id")) {
+		let id = $page.url.searchParams.get("id");
+		let docRef = doc(db, "builds", id);
+		getDoc(docRef).then(docSnap => {
+			if (docSnap.exists()) {
+				data = docSnap.data();
+			} else {
+				alert("No build found with requested ID!")
+			}
+		})
+	}
+	//
 	let points = 327;
 	let stats = {
 			basic: {
@@ -407,40 +421,27 @@
 	Promise.all(fetches).then(function() {
 		// Generate intial talents
 		updateTalents();
-		// Load existing data if url has id
-		if ($page.url.searchParams.has("id")) {
-			let id = $page.url.searchParams.get("id");
-			let docRef = doc(db, "builds", id);
-			getDoc(docRef).then(docSnap => {
-				if (docSnap.exists()) {
-					let data = docSnap.data();
-					buildInfo = data.buildInfo;
-					//
-					talents.map(talent => {
-						if (data.taken.talents.indexOf(talent.name) != -1) {
-							if (takenTalents[talent.category] == undefined) takenTalents[talent.category] = [];
-							takenTalents[talent.category].push(talent);
-						}
-					})
-					//
-					for (let statType in stats) {
-						for (let stat in stats[statType]) {
-							stats[statType][stat] = data.stats[statType][stat];
-						}
-					}
-					//
-					for (let category in takenTalents) {
-						takenTalentsCount += takenTalents[category].length;
-					}
-					//
-					updateMantras(data.taken.mantras);
-					updateActualStats(true);
-					updateTalents();
-					//
-				} else {
-					alert("No build found with requested ID!")
+		if (data != undefined) {
+			talents.map(talent => {
+			if (data.taken.talents.indexOf(talent.name) != -1) {
+				if (takenTalents[talent.category] == undefined) takenTalents[talent.category] = [];
+					takenTalents[talent.category].push(talent);
 				}
 			})
+			//
+			for (let statType in stats) {
+				for (let stat in stats[statType]) {
+					stats[statType][stat] = data.stats[statType][stat];
+				}
+			}
+			//
+			for (let category in takenTalents) {
+				takenTalentsCount += takenTalents[category].length;
+			}
+			//
+			updateMantras(data.taken.mantras);
+			updateActualStats(true);
+			updateTalents();
 		}
   	});
 	function makeId(length) {
@@ -824,5 +825,5 @@
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.2 - Talent stats now also display in tooltips. Added some reminders.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.3 - Improved data loading.</p>
 </body>
