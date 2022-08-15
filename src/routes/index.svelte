@@ -6,7 +6,6 @@
 	import { initializeApp, getApps, getApp} from "firebase/app"
 	import { getFirestore, collection, doc, setDoc, getDoc, getDocs} from "firebase/firestore"
 	import { firebaseConfig } from "../lib/firebaseConfig"
-	import { browser } from "$app/env";
 	//
 	const firebaseApp = initializeApp(firebaseConfig);
  	const db = getFirestore(firebaseApp);
@@ -820,7 +819,7 @@
 	<!-- Credits -->
 	<div class="wrapper credits">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.75vw;"> Credits </h3>
-		<p>Made by Cyfer#2358. Please send feedback!</p>
+		<p>Made by Cyfer#2380. Please send feedback!</p>
 		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a><br>
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
