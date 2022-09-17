@@ -858,5 +858,5 @@
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.2 - Talent stats now also display in tooltips. Added some reminders.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.3 - Added a newly gotten talent indicator. Also fixed mantras not showing up.</p>
 </body>
