@@ -35,7 +35,11 @@
 	}
 	// Build info
 	let obtainables = {
-		talents: {},
+		talents: {
+			Legendary: {},
+			Rare: {},
+			Common: {},
+		},
 		mantras: {}
 	}
 	let takenTalents = {};
@@ -74,14 +78,16 @@
 	}
 	//
 	function updateTalents() {
-		// Filter out talents
-		talentsCount = 0;
+		let tempObs = obtainables.talents;
 		obtainables.talents = {
 			Legendary: {},
 			Rare: {},
 			Common: {},
 		}
+		// Filter out talents
+		talentsCount = 0;
 		talents.map((talent) => {
+			talent.new = true;
 			// Check for reqs
 			if (talent.reqs != "None") {
 				if (!talent.multipleReqs) {
@@ -106,6 +112,16 @@
 						}
 					}
 					if (!pass) return;
+				}
+			}
+			// See if talent already exists
+			for (let rarity in tempObs) {
+				for (let category in tempObs[rarity]) {
+					tempObs[rarity][category].map(oldTalent => {
+						if (talent.name == oldTalent.name) {
+							talent.new = false;
+						}
+					})
 				}
 			}
 			//console.log(`Talent check passed. Adding to `)
@@ -285,7 +301,8 @@
 					multipleReqs: multipleReqs,
 					power: power,
 					taken: false,
-					note: note
+					note: note,
+					new: true,
 				}
 				talents.push(talent)
 			}
@@ -294,6 +311,11 @@
 	// Getting rollable mantras
 	function generateMantras(text) {
 		JSON.parse(text).forEach(card => {
+			if (card.name == "Attunementless" || card.name == "Flamecharm" || card.name == "Frostdraw" || card.name == "Thundercall" || card.name == "Galebreath" || card.name == "Shadowcast" || card.name == "-------------------") {
+				return;
+			}
+			console.log(card.name);
+			//
 			let [mantraName, mantraDetails] = card.name.split(" | ");
 			let [attunement, type, stars] = mantraDetails.split(" ");
 			if (attunement != "Attunementless") {
@@ -376,7 +398,7 @@
 	// Fetching talents
 	var auth = {};
 	auth = {key: env.PUBLIC_TRELLO_API_KEY, token: env.PUBLIC_TRELLO_USER_TOKEN};
-	var mantraList = "62f64dffbaf18e66395ba3c7";
+	var mantraList = "63236a2ae478db0156a9bf6d";
 	var lists = {
 		"Legendary Talents": "62ad54ebea48c31bee197013",
 		"Rare Talents": "62ad54ee5b99ba4f63ccb467",
@@ -385,6 +407,10 @@
 		"Common Talents (Index M-S)": "62afe2f6a2006e41efc383fd",
 		"Common Talents (Index T-Misc.)": "62afe2ff1ff4a37fdee1369d"
 	}
+	// Fetch cards
+	fetch(`https://api.trello.com/1/boards/fRWhz9Ew/lists?key=${auth.key}&token=${auth.token}`, {method: "GET"})
+			.then(res => {return res.text()})
+			.then(text => {console.log(text)})
 	// Loop through all the lists to generate 
 	let fetches = []
 	for (let listsName in lists) {
@@ -537,6 +563,8 @@
 		height: 10%;
 		right: 0;
 		font-family: "Lora", "sans-serif";
+		border: 1px solid black;
+		border-radius: 5px;
 		font-size: 14px;
 		padding: 1px;
 	}
@@ -742,9 +770,15 @@
 								<legend><i>{category}</i></legend>
 							</fieldset>
 							{#each talents as talent (talent)}
-								<div class="name" use:tooltip={talent} on:mousedown={getTalent(category, talent, true)}>
-									<span>{talent.name}<i class="note">{talent.note}</i><br></span>
-								</div>
+								{#if talent.new}
+									<div class="name" use:tooltip={talent} on:mousedown={getTalent(category, talent, true)}>
+										<span>{talent.name} <span class="note" style="color:red"> •</span><i class="note">{talent.note}</i><br></span>
+									</div>
+								{:else}
+									<div class="name" use:tooltip={talent} on:mousedown={getTalent(category, talent, true)}>
+										<span>{talent.name}<i class="note">{talent.note}</i><br></span>
+									</div>
+								{/if}
 							{/each}
 						{:else}
 							<br />
