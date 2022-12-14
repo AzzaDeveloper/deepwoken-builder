@@ -67,6 +67,12 @@
 	let talentBlacklist = [
 		"Termite", "Blinded", "Mark of the Lone Warrior"
 	]
+	// Search bar
+	let search = "";
+	function updateSearch(ev) {
+		search = ev.target.value;
+		updateTalents();
+	}
 	// Function to make sure no more than 1 tooltips are seen at any point
 	function checkTooltips() {
 		let tooltips = document.querySelectorAll("[tooltip=\"true\"]");
@@ -124,10 +130,14 @@
 					})
 				}
 			}
+			// Search bar
+			console.log(search);
 			//console.log(`Talent check passed. Adding to `)
-			if (obtainables.talents[talent.rarity][talent.category] == undefined) obtainables.talents[talent.rarity][talent.category] = [];
-			obtainables.talents[talent.rarity][talent.category].push(talent);
-			talentsCount++;
+			if (talent.name.toLowerCase().includes(search)) {
+				if (obtainables.talents[talent.rarity][talent.category] == undefined) obtainables.talents[talent.rarity][talent.category] = [];
+				obtainables.talents[talent.rarity][talent.category].push(talent);
+				talentsCount++;
+			}		
 			//
 			updateTalentStats();
 		})
@@ -285,7 +295,10 @@
 						} else if (req.includes("Lock")) {
 							note += ` Locks`
 							extraReqs.push({type: req.split(": ")[0], content: req.split(": ")[1]});
-						} 
+						} else if (req.includes("Oath")) {
+							note += ` Oath`
+							extraReqs.push({type: req.split(": ")[0], content: req.split(": ")[1]});
+						}
 					}
 				}
 				checkReqs(addReq1); checkReqs(addReq2);
@@ -576,6 +589,15 @@
 		border: none;
 	}
 	/* Talents */
+	#searchTalents {
+		display: block;
+		text-align: center;
+		width: 30%;
+		margin: auto;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		padding: 5px;
+	}
 	.talents-wrapper {
 		position: fixed;
 		top: 42.5vh;
@@ -585,7 +607,7 @@
 	}
 	.talents-categories {
 		display: flex;
-		height: 98%;
+		height: 92%;
 	}
 	.talents-category {
 		text-align: center;
@@ -597,7 +619,7 @@
 	}
 	.talents {
 		text-align: left;
-		height: 90%;
+		height: 85%;
 		overflow-y: scroll;
 		overflow-x: hidden;
 	}
@@ -760,6 +782,7 @@
 	<!-- Talents -->
 	<div class="wrapper talents-wrapper">
 		<h3 style="text-align: center; margin: 0"> Talents <i class="note">{talentsCount}</i></h3>
+		<input id="searchTalents" placeholder="It's finally here!! Search talents!!!" on:input={updateSearch}>
 		<div class="talents-categories">
 			{#each Object.entries(obtainables.talents) as [rarity]}
 				<div class="talents-category">
@@ -853,10 +876,10 @@
 	<!-- Credits -->
 	<div class="wrapper credits">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.75vw;"> Credits </h3>
-		<p>Made by Cyfer#2380. Please send feedback!</p>
-		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a><br>
+		<p>By Cyfer#2380. Please send feedback! Export is slow due to too many users...</p>
+		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a>
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.3 - Added a newly gotten talent indicator. Also fixed mantras not showing up.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.4 - Fixed several talents and added a search bar.</p>
 </body>
