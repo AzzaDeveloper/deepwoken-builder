@@ -36,7 +36,7 @@
 	// Build info
 	let obtainables = {
 		talents: {
-			Legendary: {},
+			Advanced: {},
 			Rare: {},
 			Common: {},
 		},
@@ -53,8 +53,8 @@
 	}
 	let mantras = {Combat: [], Mobility: [], Support: []};
 	//
-	let oaths = ["Oathless", "Blindseer", "Visionshaper"];
-	let murmurs = ["Ardour", "Tacet"];
+	let oaths = ["Oathless", "Blindseer", "Visionshaper", "Starkindred", "Arcwarder", "Linkstrider", "Jetstriker", "Contractor"];
+	let murmurs = ["Ardour", "Tacet", "Rhythm"];
 	//
 	let categoryBlacklist = [
 		"Innate",
@@ -86,7 +86,7 @@
 	function updateTalents() {
 		let tempObs = obtainables.talents;
 		obtainables.talents = {
-			Legendary: {},
+			Advanced: {},
 			Rare: {},
 			Common: {},
 		}
@@ -260,7 +260,7 @@
 				}
 				//
 				let note = "";
-				let power = 0;
+				let power = 0; let powerChecked = false;
 				let extraReqs = [];
 				statReqs.map((req) => {
 					//console.log(req);
@@ -274,7 +274,10 @@
 							if (stat == "Medium") stat = "Medium Wep.";
 							if (stat == "Light") stat = "Light Wep.";
 							amount == "Power" ? power = stat : reqs[stat] = amount;
-							if (power > 0) note += ` P${stat}`;
+							if (power > 0 && !powerChecked) {
+								note += ` P${stat}`;
+								powerChecked = true;
+							}
 						}
 					} else if (req.includes("https://")) {
 						// Adding talent reqs
@@ -413,7 +416,7 @@
 	auth = {key: env.PUBLIC_TRELLO_API_KEY, token: env.PUBLIC_TRELLO_USER_TOKEN};
 	var mantraList = "63236a2ae478db0156a9bf6d";
 	var lists = {
-		"Legendary Talents": "62ad54ebea48c31bee197013",
+		"Advanced Talents": "63a51417e115dc007d9eb48d",
 		"Rare Talents": "62ad54ee5b99ba4f63ccb467",
 		"Common Talents (Index A-D)": "62ad54f4c88e490f6670db7b",
 		"Common Talents (Index E-L)": "62afe2bd39dfb612c3b63cec",
@@ -650,7 +653,7 @@
 	#rare-talent {
 		color: rgb(202, 27, 79)
 	}
-	#legendary-talent {
+	#advanced-talent {
 		color: rgb(56, 211, 115)
 	}
 	/* Build info */
@@ -876,10 +879,10 @@
 	<!-- Credits -->
 	<div class="wrapper credits">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.75vw;"> Credits </h3>
-		<p>By Cyfer#2380. Please send feedback! Export is slow due to too many users...</p>
+		<p>By Cyfer#2380. Please send feedback! Oath talents and mantras will be coming next update.</p>
 		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a>
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.4 - Fixed several talents and added a search bar.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.5 - Updated for Verse 2!</p>
 </body>
