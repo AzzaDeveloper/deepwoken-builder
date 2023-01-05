@@ -53,7 +53,7 @@
 	}
 	let mantras = {Combat: [], Mobility: [], Support: []};
 	//
-	let oaths = ["Oathless", "Blindseer", "Visionshaper", "Starkindred", "Arcwarder", "Linkstrider", "Jetstriker", "Contractor"];
+	let oaths = ["Oathless", "Blindseer", "Visionshaper", "Starkindred", "Arcwarder", "Linkstrider", "Jetstriker", "Dawnwalker", "Contractor"];
 	let murmurs = ["Ardour", "Tacet", "Rhythm"];
 	//
 	let categoryBlacklist = [
@@ -133,7 +133,7 @@
 			// Search bar
 			console.log(search);
 			//console.log(`Talent check passed. Adding to `)
-			if (talent.name.toLowerCase().includes(search)) {
+			if (talent.name.toLowerCase().includes(search) || talent.category.toLowerCase().includes(search)) {
 				if (obtainables.talents[talent.rarity][talent.category] == undefined) obtainables.talents[talent.rarity][talent.category] = [];
 				obtainables.talents[talent.rarity][talent.category].push(talent);
 				talentsCount++;
@@ -879,10 +879,10 @@
 	<!-- Credits -->
 	<div class="wrapper credits">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.75vw;"> Credits </h3>
-		<p>By Cyfer#2380. Please send feedback! Oath talents and mantras will be coming next update.</p>
+		<p>By Cyfer#2380. Please send feedback!.</p>
 		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a>
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.5 - Updated for Verse 2!</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.7 - You can now search for categories as well.</p>
 </body>
