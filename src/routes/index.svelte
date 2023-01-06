@@ -411,6 +411,20 @@
 		}
 		obtainables.mantras[mantraType] = obtainables.mantras[mantraType];
 	}
+	// SHrine of order
+	function order() {
+		let total = 0;
+		let divideBy = 0;
+		for (let statName in stats.basic) {
+			total += stats.basic[statName];
+			if (stats.basic[statName] != 0) divideBy++;
+		}
+		//
+		for (let statName in stats.basic) {
+			if (stats.basic[statName] != 0) stats.basic[statName] = Math.floor(total / divideBy);
+		}
+		updateActualStats();
+	}
 	// Fetching talents
 	var auth = {};
 	auth = {key: env.PUBLIC_TRELLO_API_KEY, token: env.PUBLIC_TRELLO_USER_TOKEN};
@@ -729,7 +743,7 @@
 		height: 18.5vh;
 		width: 13vw;
 	}
-	#export {
+	#export, #order {
 		position: fixed;
 		top: 32.5vh;
 		left: 90vw;
@@ -741,6 +755,10 @@
 		border-image-width: 15px;
 		background-color: rgb(0, 32, 10);
 		color: white;
+	}
+	#order {
+		top: 7.5vh;
+		left: 39vw;
 	}
 	#export:hover {
 		box-shadow: 0px 0px 10px black;
@@ -767,6 +785,7 @@
 </style>
 
 <body on:mousemove={checkTooltips}>
+	<!-- Stats -->
 	<div class="wrapper stat-wrapper">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 8vh; left: 24vw;"> Stats </h3>
 		<div class="stats">
@@ -782,6 +801,7 @@
 		</div>
 		<p style="text-align:center; margin: 0; font-weight: 200; position: fixed; top: 33.5vh; left: 20vw;">Investment Points: <b style="font-weight: 700">{points}</b></p>
 	</div>
+	<button id="order" on:mousedown={order}>Shrine of Order</button>
 	<!-- Talents -->
 	<div class="wrapper talents-wrapper">
 		<h3 style="text-align: center; margin: 0"> Talents <i class="note">{talentsCount}</i></h3>
@@ -884,5 +904,5 @@
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.7 - You can now search for categories as well.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.8 - Have fun minmaxing with the new Order function!!.</p>
 </body>
