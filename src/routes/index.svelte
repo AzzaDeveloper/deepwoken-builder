@@ -415,13 +415,42 @@
 	function order() {
 		let total = 0;
 		let divideBy = 0;
-		for (let statName in stats.basic) {
-			total += stats.basic[statName];
-			if (stats.basic[statName] != 0) divideBy++;
+		let highestStat1 = "Strength";
+		let highestStat2 = "";
+		for (let statType in stats) {
+			for (let statName in stats[statType]) {
+				if (stats[statType][statName] != 0) {
+					total += stats[statType][statName];
+					divideBy++;
+					//
+					if (statName != highestStat1) {
+						if (stats[statType][statName] > stats[statType][highestStat1]) {
+							highestStat1 = statName;
+							highestStat2 = highestStat1;
+						}
+					}
+				}
+			}
 		}
 		//
-		for (let statName in stats.basic) {
-			if (stats.basic[statName] != 0) stats.basic[statName] = Math.floor(total / divideBy);
+		if (highestStat2 != "") {
+			total -= 2;
+		} else {
+			total -= 1;
+		}
+		//
+		for (let statType in stats) {
+			for (let statName in stats[statType]) {
+				if (stats[statType][statName] != 0) {
+					stats[statType][statName] = Math.floor(total / divideBy);
+					if (statName == highestStat1 && highestStat2 == "") {
+						stats[statType][statName] += 2;
+					} else if (statName == highestStat1 || statName == highestStat2) {
+						stats[statType][statName] += 1;
+					}
+				}
+				
+			}
 		}
 		updateActualStats();
 	}
