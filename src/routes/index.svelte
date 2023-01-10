@@ -33,6 +33,7 @@
 			"Shadowcast": 0
 		}
 	}
+	let currentPower = "P1";
 	// Build info
 	let obtainables = {
 		talents: {
@@ -41,6 +42,18 @@
 			Common: {},
 		},
 		mantras: {}
+	}
+	let baseMantraSlots = {
+		combat: 3,
+		mobility: 1,
+		support: 1,
+		wildcard: 1
+	}
+	let mantraSlots = {
+		combat: 3,
+		mobility: 1,
+		support: 1,
+		wildcard: 1
 	}
 	let takenTalents = {};
 	let takenTalentsCount = 0;
@@ -51,9 +64,47 @@
 		oath: "",
 		murmur: ""
 	}
-	let mantras = {Combat: [], Mobility: [], Support: []};
+	let mantras = {combat: [], mobility: [], support: []};
 	//
 	let oaths = ["Oathless", "Blindseer", "Visionshaper", "Starkindred", "Arcwarder", "Linkstrider", "Jetstriker", "Dawnwalker", "Contractor"];
+	let oathsInfo = {
+		Oathless: {
+			slots: {wildcard: 2},
+			mantras: {}
+		},
+		Blindseer: {
+			slots: {wildcard: 1, support: 1},
+			mantras: {combat: ["Tranquil Circle", "Sightless Beam"], support: ["Mindsoothe"]}
+		},
+		Visionshaper: {
+			slots: {combat: 2, support: 1},
+			mantras: {combat: ["Illusory Servants", "Illusionary Counter"], support: ["Illusionary Realm"]}
+		},
+		Starkindred: {
+			slots: {combat: 2},
+			mantras: {combat: ["Ascension", "Sinister Halo", "Celestial Assault"]}
+		},
+		Arcwarder: {
+			slots: {wildcard: 1, combat: 2},
+			mantras: {combat: ["Arc Beam", "Arc Wave"]}
+		},
+		Jetstriker: {
+			slots: {wildcard: 1, mobility: 1},
+			mantras: {}
+		},
+		Linkstrider: {
+			slots: {wildcard: 1, support: 2},
+			mantras: {support: ["Symbiotic Link", "Symbiotic Sustain", "Symbiotic Leech"]}
+		},
+		Dawnwalker: {
+			slots: {combat: 2},
+			mantras: {combat: ["Blinding Dawn ★★★", "Radiant Kick ★★★"]}
+		},
+		Contractor: {
+			slots: {combat: 2},
+			mantras: {combat: ["Judgement", "Lord's Slice", "Equalizer"]}
+		}
+	}
 	let murmurs = ["Ardour", "Tacet", "Rhythm"];
 	//
 	let categoryBlacklist = [
@@ -62,10 +113,11 @@
 		"Sovereign of Slaughter",
 		"Angler",
 		"Shipwright",
-		"Deepwoken"
+		"Deepwoken",
+		"Visionshaper",
 	]
 	let talentBlacklist = [
-		"Termite", "Blinded", "Mark of the Lone Warrior"
+		"Termite", "Blinded", "Mark of the Lone Warrior", "Survival Kit"
 	]
 	// Search bar
 	let search = "";
@@ -196,6 +248,8 @@
 		}
 		// Apply deduction from investment points
 		points = investmentPoints - totalPoints;
+		// Calculate powers
+		currentPower = `P${Math.floor(totalPoints / 15) + 1}`
 		updateTalents();
 		if (!noUpdateMantra) updateMantras();
 	}
@@ -273,7 +327,12 @@
 							if (stat == "Heavy") stat = "Heavy Wep.";
 							if (stat == "Medium") stat = "Medium Wep.";
 							if (stat == "Light") stat = "Light Wep.";
-							amount == "Power" ? power = stat : reqs[stat] = amount;
+							//
+							if (amount == "Power") {
+								power = stat;
+							} else {
+								reqs[stat] = amount;
+							}
 							if (power > 0 && !powerChecked) {
 								note += ` P${stat}`;
 								powerChecked = true;
@@ -288,6 +347,7 @@
 				})
 				// Checking for mantra / equipped reqs
 				function checkReqs(req) {
+					console.log(req)
 					if (!req == "") {
 						if (req.includes("Mantra")) {
 							note += ` Mantra Req.`;
@@ -300,7 +360,7 @@
 							extraReqs.push({type: req.split(": ")[0], content: req.split(": ")[1]});
 						} else if (req.includes("Oath")) {
 							note += ` Oath`
-							extraReqs.push({type: req.split(": ")[0], content: req.split(": ")[1]});
+							extraReqs.push({type: "Oath", content: req.split(": ")[1]});
 						}
 					}
 				}
@@ -330,10 +390,11 @@
 			if (card.name == "Attunementless" || card.name == "Flamecharm" || card.name == "Frostdraw" || card.name == "Thundercall" || card.name == "Galebreath" || card.name == "Shadowcast" || card.name == "-------------------") {
 				return;
 			}
-			console.log(card.name);
+			//console.log(card.name);
 			//
 			let [mantraName, mantraDetails] = card.name.split(" | ");
 			let [attunement, type, stars] = mantraDetails.split(" ");
+			type = type.toLowerCase();
 			if (attunement != "Attunementless") {
 				if (stars == undefined) stars = "";
 				mantras[type].push({
@@ -346,6 +407,7 @@
 				})
 			} else {
 				let [__, stat, type] = mantraDetails.split(" ");
+				type = type.toLowerCase();
 				let stars = mantraDetails[mantraDetails.indexOf("★")]; if (stars == undefined) stars = "";
 				let reqs = mantraDetails.substring(mantraDetails.indexOf("(") + 1, mantraDetails.indexOf(")")).split(", ");
 				let actualReqs = {};
@@ -361,10 +423,12 @@
 			}
 		})
 	}
+	let obtainableMantrasDisplay = {combat: [], mobility: [], support: []};
 	function updateMantras(data) {
-		obtainables.mantras = {Combat: [], Mobility: [], Support: []}
+		obtainables.mantras = {combat: [], mobility: [], support: []}
 		// Loop through elements to see which mantra is obtainable
 		for (let mantraType in mantras) {
+			console.log(mantraType);
 			mantras[mantraType].map(mantra => {
 				if (!mantra.attunementless) {
 					let stat = stats.elem[mantra.type];
@@ -375,6 +439,7 @@
 					if (stat >= 50 && stars == 3) obtainables.mantras[mantraType].push(mantra)
 				} else {
 					// Check reqs
+					let passed = true;
 					for (let req in mantra.reqs) {
 						mantra.reqs[req] = parseInt(mantra.reqs[req]);
 						let mantraReq = mantra.reqs[req];
@@ -382,12 +447,12 @@
 							if (req == "Heavy") req = "Heavy Wep.";
 							if (req == "Medium") req = "Medium Wep.";
 							if (req == "Light") req = "Light Wep.";
-							if (stats.weapon[req] < mantraReq) continue;
+							if (stats.weapon[req] < mantraReq) passed = false;
 						} else {
-							if (stats.basic[req] < mantraReq) continue;
+							if (stats.basic[req] < mantraReq) passed = false;
 						}
-						obtainables.mantras[mantraType].push(mantra)
 					}
+					if (passed) obtainables.mantras[mantraType].push(mantra);
 				}
 				// Data
 				if (data != undefined) {
@@ -395,23 +460,51 @@
 				}
 			})
 		}
-	}
-	function getMantra(elem, mantra, mantraType, intialTakenCheck) {
-		if (intialTakenCheck) {
-			if (mantra.taken) {
-				return "color: black; font-weight: 700";
+		// Updating oath mantra if possible
+		if (buildInfo.oath != "") {
+			let info = oathsInfo[buildInfo.oath];
+			for (let mantraType in info.mantras) {
+				for (let mantra of info.mantras[mantraType]) {
+					obtainables.mantras[mantraType].push({
+						name: mantra,
+						taken: false,
+						stars: ""
+					});
+				}
 			}
-		} else if (!mantra.taken) {
-			elem.style.color = "black";
-			elem.style.fontWeight = "700";
+		}
+		console.log(obtainableMantrasDisplay);
+		obtainableMantrasDisplay = obtainables.mantras;
+	}
+	//
+	function getMantra(elem, mantra, mantraType) {
+		obtainableMantrasDisplay = {combat: [], mobility: [], support: []};
+		if (!mantra.taken) {
 			mantra.taken = true;
+			// Move the mantra up top
+			//obtainables.mantras[mantraType].sort(function(x,y){ return x == mantra.taken ? -1 : y == mantra.taken ? 1 : 0; })
+			//obtainables.mantras[mantraType].sort((a, b) => obtainables.mantras[mantraType].has())
 		} else {
-			elem.removeAttribute("style");
 			mantra.taken = false;
 		}
-		obtainables.mantras[mantraType] = obtainables.mantras[mantraType];
+		obtainableMantrasDisplay[mantraType] = [...obtainables.mantras[mantraType].filter(({taken}) => taken), ...obtainables.mantras[mantraType].filter(({taken}) => !taken)]
 	}
-	// SHrine of order
+	// Oath mantras
+	function updateOath() {
+		if (buildInfo.oath == "") return;
+		let info = oathsInfo[buildInfo.oath];
+		// Update the amount of 
+		for (let slot in mantraSlots) {
+			if (info.slots[slot] != undefined) {
+				mantraSlots[slot] = baseMantraSlots[slot] + info.slots[slot]
+			} else {
+				mantraSlots[slot] = baseMantraSlots[slot];
+			}
+		}
+		updateMantras();
+		// 
+	}
+	// Shrine of order
 	function order() {
 		let total = 0;
 		let divideBy = 0;
@@ -704,7 +797,7 @@
 		position: fixed;
 		left: 67vw;
 		width: 30vw;
-		height: 29vh;
+		height: 25vh;
 	}
 	#build-name {
 		position: fixed;
@@ -730,7 +823,7 @@
 		width: 28%;
 		left: 67.9vw;
 		top: 15vh;
-		height: 12%;
+		height: 9%;
 		font-size: 13px;
 		background-color: transparent;
 		border: 15px solid;
@@ -739,7 +832,7 @@
 	}
 	#oaths, #murmurs{
 		position: fixed;
-		top: 32.75vh;
+		top: 29.5vh;
 	}
 	#oaths {left: 68vw}
 	#murmurs {left: 79vw}
@@ -748,8 +841,8 @@
 		position: fixed;
 		display: flex;
 		left: 67vw;
-		top: 42vh;
-		height: 24vh;
+		top: 37.5vh;
+		height: 29vh;
 		width: 30vw;
 	}
 	.mantras-category {
@@ -774,7 +867,7 @@
 	}
 	#export, #order {
 		position: fixed;
-		top: 32.5vh;
+		top: 29vh;
 		left: 90vw;
 		width: 8%;
 		font-family: "Lora", "sans-serif";
@@ -816,7 +909,7 @@
 <body on:mousemove={checkTooltips}>
 	<!-- Stats -->
 	<div class="wrapper stat-wrapper">
-		<h3 style="text-align: center; margin: 0; position: fixed; top: 8vh; left: 24vw;"> Stats </h3>
+		<h3 style="text-align: center; margin: 0; position: fixed; top: 8vh; left: 23vw;"> Stats <i class="note">{currentPower}</i></h3>
 		<div class="stats">
 			{#each Object.entries(stats) as [statType, statDetails]}
 				<div id={statType} class="stat">
@@ -834,7 +927,7 @@
 	<!-- Talents -->
 	<div class="wrapper talents-wrapper">
 		<h3 style="text-align: center; margin: 0"> Talents <i class="note">{talentsCount}</i></h3>
-		<input id="searchTalents" placeholder="It's finally here!! Search talents!!!" on:input={updateSearch}>
+		<input id="searchTalents" placeholder="Oath mantras to your right -->" on:input={updateSearch} style="border: 10px solid; padding: 0; border-image: url(/border.png) 45%;">
 		<div class="talents-categories">
 			{#each Object.entries(obtainables.talents) as [rarity]}
 				<div class="talents-category">
@@ -886,7 +979,7 @@
 	<div class ="wrapper build-info">
 		<b><input id="build-name" placeholder="Build name..." bind:value={buildInfo.name}></b>
 		<textarea id="build-description" placeholder="Build description..." bind:value={buildInfo.desc}></textarea>
-		<div id="oaths">Oath: <select bind:value={buildInfo.oath}>Oath:
+		<div id="oaths">Oath: <select bind:value={buildInfo.oath} on:change={updateOath}>Oath:
 			{#each oaths as mm}
 				<option>{mm}</option>
 			{/each}
@@ -900,16 +993,16 @@
 	</div>
 	<!-- Mantras -->
 	<div class="wrapper mantras">
-		<h3 style="text-align: center; margin: 0; position: fixed; top: 44vh; left: 80.5vw;"> Mantras </h3>
-		<h3 style="text-align: center; margin: 0; position: fixed; top: 46.5vh; left: 76.75vw; font-size:14px"><i class="note">Click on mantras to get them!</i></h3>
-		{#each Object.entries(obtainables.mantras) as [type, mantras] (mantras)}
-			<div style="text-align: center" class="mantras-category" id={type.toLowerCase()}>{type}
+		<h3 style="text-align: center; margin: 0; position: fixed; top: 39vh; left: 77.5vw;"> Mantras <i class="note">(Wildcard: {mantraSlots.wildcard})</h3>
+		<h3 style="text-align: center; margin: 0; position: fixed; top: 41.5vh; left: 77vw; font-size:14px"><i class="note">Click on mantras to get them!</i></h3>
+		{#each Object.entries(obtainableMantrasDisplay) as [type, mantras] (mantras)}
+			<div style="text-align: center" class="mantras-category" id={type}>{type.charAt(0).toUpperCase() + type.slice(1)} <i class="note">({mantraSlots[type]})</i>
 				<div class="talents">
 					{#each mantras as mantra}
 						{#if mantra.taken} 
 							<div class="talent mantra" on:mousedown={getMantra(this, mantra, type)} style="font-weight: 700; color:black">{mantra.name} {mantra.stars}</div>
 						{:else}
-							<div class="talent mantra" on:mousedown={getMantra(this, mantra, type, false)}>{mantra.name} {mantra.stars}</div>
+							<div class="talent mantra" on:mousedown={getMantra(this, mantra, type)}>{mantra.name} {mantra.stars}</div>
 						{/if}
 					{/each}
 				</div>
@@ -927,11 +1020,11 @@
 	</div>
 	<!-- Credits -->
 	<div class="wrapper credits">
-		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.75vw;"> Credits </h3>
-		<p>By Cyfer#2380. Please send feedback!.</p>
+		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.5vw;"> Credits </h3>
+		<p>By Cyfer#2380. My back hurts.</p>
 		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a>
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
 	<!-- Footer -->
-	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.8 - Have fun minmaxing with the new Order function!!.</p>
+	<p class="footer" style="position: fixed; bottom: -5px; right: 10px; color: white; font-family: 'Lora', 'sans-serif'; font-size: 12px">v1.1.9 - Oath update with various fixes. The next update will be minor (races, undo button, etc.) to prepare for v2.0!!</p>
 </body>
