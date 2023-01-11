@@ -482,7 +482,6 @@
 	}
 	//
 	function getMantra(elem, mantra, mantraType) {
-		obtainableMantrasDisplay[mantraType] = [];
 		if (!mantra.taken) {
 			mantra.taken = true;
 			// Move the mantra up top
@@ -492,6 +491,7 @@
 			mantra.taken = false;
 		}
 		obtainableMantrasDisplay[mantraType] = [...obtainables.mantras[mantraType].filter(({taken}) => taken), ...obtainables.mantras[mantraType].filter(({taken}) => !taken)]
+		console.log(obtainableMantrasDisplay)
 	}
 	// Oath mantras
 	function updateOath() {
