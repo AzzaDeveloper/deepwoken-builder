@@ -1,4 +1,8 @@
 <script>
+	Number.prototype.clamp = function(min, max) {
+  		return Math.min(Math.max(this, min), max);
+	};
+	//
 	import { env } from '$env/dynamic/public';
 	import { page } from '$app/stores';
 	import { tooltip } from "../lib/tooltip";
@@ -249,7 +253,7 @@
 		// Apply deduction from investment points
 		points = investmentPoints - totalPoints;
 		// Calculate powers
-		currentPower = `P${Math.floor(totalPoints / 15) + 1}`
+		currentPower = `P${(Math.floor((totalPoints - 24) / 15)).clamp(1, 20)}`
 		updateTalents();
 		if (!noUpdateMantra) updateMantras();
 	}
@@ -478,7 +482,7 @@
 	}
 	//
 	function getMantra(elem, mantra, mantraType) {
-		obtainableMantrasDisplay = {combat: [], mobility: [], support: []};
+		obtainableMantrasDisplay[mantraType] = [];
 		if (!mantra.taken) {
 			mantra.taken = true;
 			// Move the mantra up top
