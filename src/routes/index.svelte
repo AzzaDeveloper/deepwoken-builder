@@ -253,7 +253,7 @@
 		// Apply deduction from investment points
 		points = investmentPoints - totalPoints;
 		// Calculate powers
-		currentPower = `P${(Math.floor((totalPoints - 24) / 15)).clamp(1, 20)}`
+		currentPower = `P${(Math.floor((totalPoints - 27) / 15)).clamp(1, 20)}`
 		updateTalents();
 		if (!noUpdateMantra) updateMantras();
 	}
