@@ -45,7 +45,7 @@
 			Rare: {},
 			Common: {},
 		},
-		mantras: {}
+		mantras: {combat:[], mobility:[], support:[]}
 	}
 	let baseMantraSlots = {
 		combat: 3,
@@ -253,7 +253,7 @@
 		// Apply deduction from investment points
 		points = investmentPoints - totalPoints;
 		// Calculate powers
-		currentPower = `P${(Math.floor((totalPoints - 27) / 15)).clamp(1, 20)}`
+		currentPower = `P${(Math.floor((totalPoints - 27 + 15) / 15)).clamp(1, 20)}`
 		updateTalents();
 		if (!noUpdateMantra) updateMantras();
 	}
@@ -351,7 +351,6 @@
 				})
 				// Checking for mantra / equipped reqs
 				function checkReqs(req) {
-					console.log(req)
 					if (!req == "") {
 						if (req.includes("Mantra")) {
 							note += ` Mantra Req.`;
@@ -429,18 +428,31 @@
 	}
 	let obtainableMantrasDisplay = {combat: [], mobility: [], support: []};
 	function updateMantras(data) {
-		obtainables.mantras = {combat: [], mobility: [], support: []}
+		// Loop through mantras to keep taken mantra
+		let taken = []
+		for (let mantraType in obtainables.mantras) {
+			for (let i = 0; i < obtainables.mantras[mantraType].length; i++) {
+				let mantra = obtainables.mantras[mantraType][i];
+				if (!mantra.taken) {
+					obtainables.mantras[mantraType].splice(i, 1);
+					i--;
+				} else {
+					taken.push(mantra);
+				};
+			}
+		}
+		console.log(obtainables.mantras)
 		// Loop through elements to see which mantra is obtainable
 		for (let mantraType in mantras) {
-			console.log(mantraType);
 			mantras[mantraType].map(mantra => {
+				let pushedMantra = null;
 				if (!mantra.attunementless) {
 					let stat = stats.elem[mantra.type];
 					let stars = mantra.stars.length;
-					if (stat >= 1 && stars == 0) obtainables.mantras[mantraType].push(mantra)
-					if (stat >= 20 && stars == 1) obtainables.mantras[mantraType].push(mantra)
-					if (stat >= 30 && stars == 2) obtainables.mantras[mantraType].push(mantra)
-					if (stat >= 50 && stars == 3) obtainables.mantras[mantraType].push(mantra)
+					if (stat >= 1 && stars == 0) pushedMantra = mantra;
+					if (stat >= 20 && stars == 1) pushedMantra = mantra;
+					if (stat >= 30 && stars == 2) pushedMantra = mantra;
+					if (stat >= 50 && stars == 3) pushedMantra = mantra;
 				} else {
 					// Check reqs
 					let passed = true;
@@ -456,14 +468,24 @@
 							if (stats.basic[req] < mantraReq) passed = false;
 						}
 					}
-					if (passed) obtainables.mantras[mantraType].push(mantra);
+					if (passed) pushedMantra = mantra;
 				}
+				if (pushedMantra != null) {
+					let passed = true;
+					for (let mantraType in obtainables.mantras) {
+						obtainables.mantras[mantraType].forEach((mantra, index) => {
+							if (mantra.name == pushedMantra.name) passed = false;
+						})
+					}
+					if (passed) obtainables.mantras[mantraType].push(mantra)
+				};
 				// Data
 				if (data != undefined) {
 					if (data.indexOf(mantra.name) != -1) mantra.taken = true;
 				}
 			})
 		}
+		console.log(obtainables.mantras)
 		// Updating oath mantra if possible
 		if (buildInfo.oath != "") {
 			let info = oathsInfo[buildInfo.oath];
@@ -477,21 +499,16 @@
 				}
 			}
 		}
-		console.log(obtainableMantrasDisplay);
 		obtainableMantrasDisplay = obtainables.mantras;
 	}
 	//
 	function getMantra(elem, mantra, mantraType) {
 		if (!mantra.taken) {
 			mantra.taken = true;
-			// Move the mantra up top
-			//obtainables.mantras[mantraType].sort(function(x,y){ return x == mantra.taken ? -1 : y == mantra.taken ? 1 : 0; })
-			//obtainables.mantras[mantraType].sort((a, b) => obtainables.mantras[mantraType].has())
 		} else {
 			mantra.taken = false;
 		}
 		obtainableMantrasDisplay[mantraType] = [...obtainables.mantras[mantraType].filter(({taken}) => taken), ...obtainables.mantras[mantraType].filter(({taken}) => !taken)]
-		console.log(obtainableMantrasDisplay)
 	}
 	// Oath mantras
 	function updateOath() {
