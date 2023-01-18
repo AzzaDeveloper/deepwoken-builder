@@ -1042,7 +1042,7 @@
 	<!-- Credits -->
 	<div class="wrapper credits">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.5vw;"> Credits </h3>
-		<p>By Cyfer#2380. My back hurts.</p>
+		<p>By Cyfer#2380. Talents are currently bugged! Please be patient.</p>
 		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a>
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
