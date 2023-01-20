@@ -948,7 +948,7 @@
 	<!-- Talents -->
 	<div class="wrapper talents-wrapper">
 		<h3 style="text-align: center; margin: 0"> Talents <i class="note">{talentsCount}</i></h3>
-		<input id="searchTalents" placeholder="Oath mantras to your right -->" on:input={updateSearch} style="border: 10px solid; padding: 0; border-image: url(/border.png) 45%;">
+		<input id="searchTalents" placeholder="Talents are bugged! Fixing ASAP" on:input={updateSearch} style="border: 10px solid; padding: 0; border-image: url(/border.png) 45%;">
 		<div class="talents-categories">
 			{#each Object.entries(obtainables.talents) as [rarity]}
 				<div class="talents-category">
