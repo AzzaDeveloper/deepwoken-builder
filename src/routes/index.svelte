@@ -7983,7 +7983,7 @@
 	<!-- Talents -->
 	<div class="wrapper talents-wrapper">
 		<h3 style="text-align: center; margin: 0"> Talents <i class="note">{talentsCount}</i></h3>
-		<input id="searchTalents" placeholder="Talents are bugged! Fixing ASAP" on:input={updateSearch} style="border: 10px solid; padding: 0; border-image: url(/border.png) 45%;">
+		<input id="searchTalents" placeholder="Talents are back, fixing live talent updates." on:input={updateSearch} style="border: 10px solid; padding: 0; border-image: url(/border.png) 45%;">
 		<div class="talents-categories">
 			{#each Object.entries(obtainables.talents) as [rarity]}
 				<div class="talents-category">
@@ -8077,7 +8077,7 @@
 	<!-- Credits -->
 	<div class="wrapper credits">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.5vw;"> Credits </h3>
-		<p>By Cyfer#2380. Talents are currently bugged! Please be patient.</p>
+		<p>By Cyfer#2380. Thank you Raum!</p>
 		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a>
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
