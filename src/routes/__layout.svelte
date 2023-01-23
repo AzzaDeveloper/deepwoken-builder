@@ -12,10 +12,10 @@
             analyticsId
         })
     }*/ 
-    import Analytics from '../lib/analytics.svelte';
+   // import Analytics from '../lib/analytics.svelte';
 </script>
 
-<Analytics />
+<!--<Analytics />-->
   
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

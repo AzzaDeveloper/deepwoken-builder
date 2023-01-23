@@ -7626,6 +7626,7 @@
 		fetch(`https://api.trello.com/1/lists/${lists[listsName]}/cards?key=${auth.key}&token=${auth.token}`, {method: "GET"})
 			.then(res => {return res.text()})
 			//.then(text => {generate(text, listsName)})
+			.then(text => {console.log(text)})
 			//.then(console.log(talents))
 			.catch(err => console.error(err))
 		)
@@ -7960,9 +7961,20 @@
 	p {
 		margin-top: 4vh;
 	}
+  .announcement {
+    position: fixed;
+    width: 100%;
+    top: 0px;
+    margin-top: 0vh;
+    color: white;
+    font-size: 25px;
+    text-align: center;
+    font-family: 'Lora', sans-serif;
+  }
 </style>
 
 <body on:mousemove={checkTooltips}>
+  <a class="announcement" href="https://deepwoken.co/builder"> Check out the new v2 builder here!</a>
 	<!-- Stats -->
 	<div class="wrapper stat-wrapper">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 8vh; left: 23vw;"> Stats <i class="note">{currentPower}</i></h3>
@@ -8033,7 +8045,7 @@
 	</div>
 	<!-- Build stuff -->
 	<div class ="wrapper build-info">
-		<b><input id="build-name" placeholder="Build name..." bind:value={buildInfo.name}></b>
+		<b><input id="build-name" placeholder="Build name..." bind:value={buildInfo.name} selected></b>
 		<textarea id="build-description" placeholder="Build description..." bind:value={buildInfo.desc}></textarea>
 		<div id="oaths">Oath: <select bind:value={buildInfo.oath} on:change={updateOath}>Oath:
 			{#each oaths as mm}
