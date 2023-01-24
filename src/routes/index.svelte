@@ -8089,7 +8089,7 @@
 	<!-- Credits -->
 	<div class="wrapper credits">
 		<h3 style="text-align: center; margin: 0; position: fixed; top: 76vh; left: 89.5vw;"> Credits </h3>
-		<p>By Cyfer#2380. Thank you Raum!</p>
+		<p>By Cyfer#2380. This site will eventually be taken down in favor of V2! Thank you for your support.</p>
 		<a target="_blank" href="https://discord.gg/deepwokeninfo">Deepwoken Info Discord</a>
 		<a target="_blank" href="https://trello.com/b/fRWhz9Ew/deepwoken-talent-list">Trello</a>
 	</div>
